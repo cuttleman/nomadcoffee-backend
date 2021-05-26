@@ -3,12 +3,13 @@ import { gql } from "apollo-server";
 export default gql`
   type User {
     id: String!
-    userName: String!
+    username: String!
     email: String!
-    firstName: String
-    LastName: String
-    caption: String
-    coffee: [Coffee]!
+    name: String
+    password: String!
+    location: String
+    avatarUrl: String
+    githubUsername: String
     createAt: String!
     updateAt: String!
   }
@@ -16,11 +17,17 @@ export default gql`
     allUsers: [User]!
   }
   type Mutation {
-    createUser(
+    createAccount(
       email: String!
-      userName: String!
-      firstName: String
-      LastName: String
-    ): Boolean!
+      username: String!
+      password: String!
+      name: String
+      location: String
+    ): CreateAccount!
+  }
+  # Return type of Queries and Mutations
+  type CreateAccount {
+    ok: Boolean!
+    error: String
   }
 `;

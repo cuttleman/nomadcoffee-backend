@@ -1,5 +1,4 @@
 import { ApolloServer } from "apollo-server";
-import logger from "morgan";
 import dotenv from "dotenv";
 import schema from "./schema";
 
