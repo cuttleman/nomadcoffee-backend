@@ -1,12 +1,9 @@
-import client from "../../client";
-import bcrypt from "bcrypt";
+import client from "../../../client";
+import { passedHashFn } from "../user.utils";
 
 export default {
   Mutation: {
-    createAccount: async (
-      _,
-      { email, username, password, name = "", location = "" }
-    ) => {
+    createAccount: async (_, { email, username, password, name, location }) => {
       // Check user exist or not
       const existedAccount = await client.user.findFirst({
         where: {
@@ -15,13 +12,11 @@ export default {
       });
       try {
         if (!existedAccount) {
-          // Password convert to ugly string via Hash fn
-          const hashedPassword = await bcrypt.hash(password, 10);
           await client.user.create({
             data: {
               email,
               username,
-              password: hashedPassword,
+              password: await passedHashFn(password),
               name,
               location,
             },
