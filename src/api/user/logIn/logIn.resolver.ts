@@ -1,10 +1,14 @@
 import client from "../../../client";
 import bcrypt from "bcrypt";
 import { generateToken } from "../user.utils";
+import { UserApi } from "types";
 
 export default {
   Mutation: {
-    logIn: async (_, { email, password }) => {
+    logIn: async (
+      _: any,
+      { email, password }: UserApi.LogIn.Args
+    ): Promise<UserApi.LogIn.Return> => {
       try {
         const checkUser = await client.user.findUnique({
           where: { email },

@@ -1,9 +1,13 @@
 import client from "../../../client";
 import { passedHashFn } from "../user.utils";
+import { UserApi } from "types";
 
 export default {
   Mutation: {
-    createAccount: async (_, { email, username, password, name, location }) => {
+    createAccount: async (
+      _: any,
+      { email, username, password, name, location }: UserApi.CreateAccount.Args
+    ): Promise<UserApi.CreateAccount.Return> => {
       // Check user exist or not
       const existedAccount = await client.user.findFirst({
         where: {
@@ -21,13 +25,13 @@ export default {
               location,
             },
           });
-          return { ok: true };
+          return { result: true };
         } else {
           // If user existed
           throw Error("email or username already existed");
         }
       } catch (error) {
-        return { ok: false, error: error.message };
+        return { result: false, error: error.message };
       }
     },
   },
