@@ -55,7 +55,7 @@ declare module "types" {
   namespace Resolver {
     type ProtectedResolver = ResolverFn;
     interface Context {
-      loggedUser: Promise<string>;
+      loggedUser: User | null;
     }
   }
 }

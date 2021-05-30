@@ -3,19 +3,23 @@ import jwt from "jsonwebtoken";
 import client from "../../client";
 import { UserApi, Resolver } from "types";
 
-const SECRET_KEY = process.env.SECRET_KEY;
-
 export const passedHashFn = (password: UserApi.Password): Promise<string> =>
   bcrypt.hash(password, 10);
 
-export const generateToken = (id: UserApi.Id) => jwt.sign({ id }, SECRET_KEY);
+export const generateToken = (id: UserApi.Id) => {
+  if (process.env.SECRET_KEY) {
+    return jwt.sign({ id }, process.env.SECRET_KEY);
+  } else {
+    throw Error("We dont have property as SECRET_KEY in env.");
+  }
+};
 
 export const getUser = async (token: UserApi.Token) => {
   try {
-    if (!token || typeof token !== "string") {
-      return null;
+    if (!token || typeof token !== "string" || !process.env.SECRET_KEY) {
+      throw Error("Token type or Scret key broken.");
     }
-    const result: any = jwt.verify(token, SECRET_KEY);
+    const result: any = jwt.verify(token, process.env.SECRET_KEY);
     if ("id" in result) {
       const user = await client.user.findUnique({
         where: { id: result["id"] },
@@ -23,10 +27,13 @@ export const getUser = async (token: UserApi.Token) => {
       if (user) {
         return user;
       } else {
-        return null;
+        throw Error("Not existed user.");
       }
+    } else {
+      throw Error("Error of token decode.");
     }
   } catch (error) {
+    console.log(error.message);
     return null;
   }
 };
