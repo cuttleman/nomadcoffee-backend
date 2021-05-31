@@ -60,3 +60,13 @@ Now it's time to create the following resolvers:
 You will also have to write some code to protect your resolvers and inject the logged in user to the resolver's context. ✅
 
 ```
+
+<br>
+
+## _Weel 4_
+
+```
+Implement Follow / Unfollow functionality. ✅
+Implement followers & following computed fields with pagination on the seeUser resolver (No extra resolvers). ✅
+Implement searchUsers resolver. ✅
+```

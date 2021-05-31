@@ -11,13 +11,41 @@ declare module "types" {
       result: boolean;
       error?: string;
     }
+
     // Resolvers of User Api
+    namespace SearchUsers {
+      interface Args {
+        keyword: string;
+        cursorId?: string;
+      }
+      interface Return extends ReturnG {
+        searchingByKeyword?: User[];
+        cursorId?: String;
+        hasNext?: Boolean;
+      }
+    }
+    namespace ToggleFollow {
+      interface Args {
+        id: string;
+      }
+      interface Return extends ReturnG {}
+    }
     namespace SeeProfile {
       interface Args {
-        username: string;
+        id: string;
       }
       interface Return extends ReturnG {
         user?: User;
+      }
+      namespace Computed {
+        interface Parent extends User {
+          pageNum: number;
+          takeNum: number;
+        }
+        interface Return {
+          users?: User[];
+          totalPageNum?: number;
+        }
       }
     }
     namespace LogIn {

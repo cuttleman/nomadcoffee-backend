@@ -2,6 +2,7 @@ import client from "../../../client";
 import bcrypt from "bcrypt";
 import { generateToken } from "../user.utils";
 import { UserApi } from "types";
+import { User } from ".prisma/client";
 
 export default {
   Mutation: {
@@ -10,14 +11,14 @@ export default {
       { email, password }: UserApi.LogIn.Args
     ): Promise<UserApi.LogIn.Return> => {
       try {
-        const checkUser = await client.user.findUnique({
+        const checkUser: User | null = await client.user.findUnique({
           where: { email },
         });
         if (!checkUser) {
           throw Error("User not found.");
         }
 
-        const comparedPassword = await bcrypt.compare(
+        const comparedPassword: boolean = await bcrypt.compare(
           password,
           checkUser.password
         );
@@ -25,7 +26,7 @@ export default {
           throw Error("Not correct password.");
         }
 
-        const token = generateToken(checkUser.id);
+        const token: string = generateToken(checkUser.id);
 
         return { result: true, token };
       } catch (error) {

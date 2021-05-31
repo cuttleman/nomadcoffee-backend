@@ -1,12 +1,23 @@
 import { gql } from "apollo-server";
 
 export default gql`
+  type Query {
+    seeProfile(id: String!): SeeProfile!
+  }
   type SeeProfile {
     result: Boolean!
-    user: User
     error: String
+    user: User
+    seeFollowers(pageNum: Int!): Followers
+    seeFollowing(pageNum: Int!): Followers
+    totalFollowers: TotalFollowNum
+    totalFollowing: TotalFollowNum
   }
-  type Query {
-    seeProfile(username: String!): SeeProfile!
+  type Followers {
+    users: [User]
+    totalPageNum: Int
+  }
+  type TotalFollowNum {
+    count: Int
   }
 `;

@@ -5,10 +5,11 @@ import logger from "morgan";
 import dotenv from "dotenv";
 import schema from "./schema";
 import { getUser } from "./api/user/user.utils";
+import { User } from ".prisma/client";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 4000;
+const PORT: number | string = process.env.PORT || 4000;
 
 const app = express();
 
@@ -25,7 +26,7 @@ const server = new ApolloServer({
   ...schema,
   context: async ({ req }) => {
     const token = req.headers.token;
-    const loggedUser = await getUser(token);
+    const loggedUser: User | null = await getUser(token);
     return { loggedUser };
   },
 });

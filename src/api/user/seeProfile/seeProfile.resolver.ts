@@ -1,18 +1,35 @@
 import client from "../../../client";
 import { protectedResolver } from "../user.utils";
 import { UserApi } from "types";
+import { User } from ".prisma/client";
 
 export default {
   Query: {
     seeProfile: protectedResolver(
-      async (
-        _: any,
-        { username }: UserApi.SeeProfile.Args
-      ): Promise<UserApi.SeeProfile.Return> => {
+      async (_: any, { id }: UserApi.SeeProfile.Args) => {
         try {
-          const user = await client.user.findUnique({ where: { username } });
+          const user = await client.user.findUnique({
+            where: { id },
+          });
           if (user) {
-            return { result: true, user };
+            const TAKE_NUM: number = 5;
+
+            return {
+              result: true,
+              user,
+              seeFollowers: ({ pageNum }: any) => ({
+                ...user,
+                pageNum,
+                takeNum: TAKE_NUM,
+              }),
+              seeFollowing: ({ pageNum }: any) => ({
+                ...user,
+                pageNum,
+                takeNum: TAKE_NUM,
+              }),
+              totalFollowers: { ...user },
+              totalFollowing: { ...user },
+            };
           } else {
             throw Error("Not Found specific User from username");
           }
@@ -21,5 +38,73 @@ export default {
         }
       }
     ),
+  },
+
+  // Resolver Chain : 'https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-chains'
+  Followers: {
+    // Computed followers, following total page
+    totalPageNum: async (
+      parent: UserApi.SeeProfile.Computed.Parent,
+      _: any,
+      __: any,
+      info: any
+    ) => {
+      const { id, takeNum } = parent;
+      const { key: from } = info.path.prev;
+      const totalNum: number = await client.user.count({
+        where: {
+          [from === "seeFollowers" ? "following" : "followers"]: {
+            some: { id },
+          },
+        },
+      });
+      const totalPageNum: number = Math.ceil(totalNum / takeNum);
+      return totalPageNum;
+    },
+    // Computed followers, following users
+    users: async (
+      parent: UserApi.SeeProfile.Computed.Parent,
+      _: any,
+      __: any,
+      info: any
+    ) => {
+      const { id, pageNum, takeNum } = parent;
+      const { key: from } = info.path.prev;
+      try {
+        const followUsers: User[] | null = await client.user.findMany({
+          where: {
+            [from === "seeFollowers" ? "following" : "followers"]: {
+              some: { id },
+            },
+          },
+          skip: (pageNum - 1) * takeNum,
+          take: takeNum,
+        });
+
+        return followUsers;
+      } catch (error) {
+        throw Error("Error: seeFollowers resolver in User computed field");
+      }
+    },
+  },
+
+  // Computed followers, following total number
+  TotalFollowNum: {
+    count: async (
+      parent: UserApi.SeeProfile.Computed.Parent,
+      _: any,
+      __: any,
+      info: any
+    ): Promise<number> => {
+      const { id } = parent;
+      const { key: from } = info.path.prev;
+      return client.user.count({
+        where: {
+          [from === "totalFollowers" ? "following" : "followers"]: {
+            some: { id },
+          },
+        },
+      });
+    },
   },
 };
