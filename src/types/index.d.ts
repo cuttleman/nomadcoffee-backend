@@ -1,16 +1,74 @@
 declare module "types" {
   import { ResolverFn } from "apollo-server";
-  import { User } from ".prisma/client";
+  import { Category, CoffeeShop, User } from ".prisma/client";
+  import { ReadStream } from "fs-capacitor";
   import "./environment";
+
+  interface ReturnG {
+    result: boolean;
+    error?: string;
+  }
+  type PhotoG = {
+    filename: string;
+    mimetype: string;
+    encoding: string;
+    createReadStream: () => ReadStream;
+  };
+
+  namespace CoffeeApi {
+    namespace CategoryComputed {
+      interface Parent extends Category {}
+    }
+    namespace SeeCategory {
+      interface Args {
+        keyword: string;
+        pageNum: number;
+      }
+      interface Return extends ReturnG {
+        category?: Category;
+        shops?: CoffeeShop[];
+      }
+    }
+    namespace SeeCoffeeShop {
+      interface Args {
+        id: string;
+      }
+      interface Return extends ReturnG {
+        shop?: CoffeeShop;
+      }
+    }
+    namespace SeeCategories {
+      interface Args {
+        keyword: string;
+        pageNum: number;
+      }
+      interface Return extends ReturnG {
+        categories?: Category[];
+      }
+    }
+    namespace EditCoffeeShop {
+      interface Args extends CreateCoffeeShop.Args {
+        name?: string;
+        id: string;
+      }
+      interface Return extends ReturnG {}
+    }
+    namespace CreateCoffeeShop {
+      interface Args {
+        name: string;
+        latitude?: string;
+        longitude?: string;
+        categories?: string[];
+        photos?: PhotoG[];
+      }
+      interface Return extends ReturnG {}
+    }
+  }
 
   namespace UserApi {
     type Password = string;
     type Token = string | string[] | undefined;
     type Id = string;
-    interface ReturnG {
-      result: boolean;
-      error?: string;
-    }
 
     // Resolvers of User Api
     namespace SearchUsers {

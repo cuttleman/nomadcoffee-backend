@@ -12,6 +12,7 @@ export default gql`
     githubUsername: String
     isFollowing: Boolean
     isSelf: Boolean
+    coffeeShops: [CoffeeShop!]
     createAt: String!
     updateAt: String!
   }

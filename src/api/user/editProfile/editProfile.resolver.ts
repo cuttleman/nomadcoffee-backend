@@ -2,6 +2,7 @@ import fs from "fs";
 import client from "../../../client";
 import { passedHashFn, protectedResolver } from "../user.utils";
 import { Resolver, UserApi } from "types";
+import { localSave } from "../../api.utils";
 
 export default {
   Mutation: {
@@ -21,18 +22,7 @@ export default {
         let avatarUrl: string = "";
         try {
           if (avatar) {
-            const { filename, createReadStream } = await avatar;
-            const newFilename: string = `${
-              loggedUser?.id
-            }_${Date.now()}_${filename}`;
-            const readStream = createReadStream();
-            // /* Only Develop mode, will be remove.
-            const writeStream: fs.WriteStream = fs.createWriteStream(
-              `${process.cwd()}/src/uploads/${newFilename}`
-            );
-            readStream.pipe(writeStream);
-            avatarUrl = `http://localhost:4000/static/${filename}`;
-            // */
+            avatarUrl = await localSave("avatar", loggedUser?.id, avatar);
           }
           await client.user.update({
             where: { id: loggedUser?.id },
