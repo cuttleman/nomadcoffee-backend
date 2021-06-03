@@ -18,7 +18,7 @@ export default {
             const relations = await client.coffeeShopToCategory.findMany({
               where: { categoryId: category?.id },
             });
-            const shopIdMap = relations.map((relation) => ({
+            const shopIdMap = relations.map((relation: any) => ({
               id: relation.shopId,
             }));
             const shops = await client.coffeeShop.findMany({

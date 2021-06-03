@@ -1,15 +1,14 @@
 import client from "../../client";
 import { Resolver, UserApi } from "types";
-import { User } from ".prisma/client";
 
 export default {
   User: {
     isFollowing: async (
-      parent: User,
+      parent: UserApi.User,
       _: any,
       { loggedUser }: Resolver.Context
     ): Promise<boolean> => {
-      const result: number = await client.user.count({
+      const result = await client.user.count({
         where: { id: loggedUser?.id, following: { some: { id: parent.id } } },
       });
       if (result) {
@@ -19,7 +18,7 @@ export default {
       }
     },
     isSelf: async (
-      parent: User,
+      parent: UserApi.User,
       _: any,
       { loggedUser }: Resolver.Context
     ): Promise<boolean> => {

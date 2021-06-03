@@ -1,7 +1,6 @@
 import client from "../../../client";
 import { protectedResolver } from "../user.utils";
 import { UserApi } from "types";
-import { User } from ".prisma/client";
 
 export default {
   Query: {
@@ -58,7 +57,7 @@ export default {
           },
         },
       });
-      const totalPageNum: number = Math.ceil(totalNum / takeNum);
+      const totalPageNum = Math.ceil(totalNum / takeNum);
       return totalPageNum;
     },
     // Computed followers, following users
@@ -71,7 +70,7 @@ export default {
       const { id, pageNum, takeNum } = parent;
       const { key: from } = info.path.prev;
       try {
-        const followUsers: User[] | null = await client.user.findMany({
+        const followUsers = await client.user.findMany({
           where: {
             [from === "seeFollowers" ? "following" : "followers"]: {
               some: { id },

@@ -1,7 +1,6 @@
 import client from "../../../client";
 import { passedHashFn } from "../user.utils";
 import { UserApi } from "types";
-import { User } from ".prisma/client";
 
 export default {
   Mutation: {
@@ -10,7 +9,7 @@ export default {
       { email, username, password, name, location }: UserApi.CreateAccount.Args
     ): Promise<UserApi.CreateAccount.Return> => {
       // Check user exist or not
-      const existedAccount: User | null = await client.user.findFirst({
+      const existedAccount = await client.user.findFirst({
         where: {
           OR: [{ email }, { username }],
         },

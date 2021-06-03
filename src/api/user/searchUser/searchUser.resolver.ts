@@ -1,7 +1,6 @@
-import { User } from ".prisma/client";
-import { UserApi } from "types";
 import client from "../../../client";
 import { protectedResolver } from "../user.utils";
+import { UserApi } from "types";
 
 export default {
   Query: {
@@ -10,11 +9,11 @@ export default {
         _: any,
         { keyword, cursorId: prevCursorId }: UserApi.SearchUsers.Args
       ): Promise<UserApi.SearchUsers.Return> => {
-        const TAKE_NUM: number = 10;
-        let firstUserId: string = "";
+        const TAKE_NUM = 10;
+        let firstUserId = "";
         try {
           if (!prevCursorId) {
-            const firstUser: User | null = await client.user.findFirst({
+            const firstUser = await client.user.findFirst({
               where: { username: { startsWith: keyword.toLowerCase() } },
             });
             if (!firstUser) {
@@ -24,7 +23,7 @@ export default {
             }
           }
 
-          const searchingByKeyword: User[] | null = await client.user.findMany({
+          const searchingByKeyword = await client.user.findMany({
             where: { username: { startsWith: keyword.toLowerCase() } },
             take: TAKE_NUM,
             cursor: {
@@ -33,9 +32,9 @@ export default {
             skip: prevCursorId ? 1 : 0,
           });
 
-          const lastUser: User = searchingByKeyword[TAKE_NUM - 1];
-          const currCursorId: string = lastUser?.id;
-          const hasNext: boolean = currCursorId ? true : false;
+          const lastUser = searchingByKeyword[TAKE_NUM - 1];
+          const currCursorId = lastUser?.id;
+          const hasNext = currCursorId ? true : false;
           return {
             result: true,
             searchingByKeyword,

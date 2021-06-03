@@ -3,6 +3,7 @@ declare global {
     interface ProcessEnv {
       SECRET_KEY: string;
       PORT: number;
+      PRODUCTION: boolean;
     }
   }
 }

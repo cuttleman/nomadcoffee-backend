@@ -2,6 +2,7 @@ import { CoffeeApi, PhotoG, Resolver } from "types";
 import client from "../../../client";
 import { v4 as uuidv4 } from "uuid";
 import { localSave } from "../../api.utils";
+import { calculateCategory } from "../coffee.utils";
 
 export default {
   Mutation: {
@@ -18,16 +19,33 @@ export default {
       { loggedUser }: Resolver.Context
     ): Promise<CoffeeApi.EditCoffeeShop.Return> => {
       try {
-        const photoUrls: string[] = [];
+        const newPhotos: { where: { id: string }; data: { url: string } }[] =
+          [];
+
         if (photos) {
           photos.map(async (photo: PhotoG, idx: number) => {
-            photoUrls[idx] = await localSave("shop", loggedUser?.id, photo);
+            const url = await localSave("shop", loggedUser?.id, photo);
+            newPhotos[idx] = { where: { id }, data: { url } };
           });
         }
-        const urlMap = photoUrls.map((url: string) => ({
-          where: { id },
-          data: { url },
-        }));
+
+        const disconnectedCategories = await client.category
+          .findMany({
+            where: {
+              shops: {
+                some: { shopId: id },
+              },
+            },
+            select: {
+              id: true,
+            },
+          })
+          .then((result: any) =>
+            result.map((prevCategory: any) => ({
+              shopId_categoryId: { shopId: id, categoryId: prevCategory.id },
+            }))
+          );
+
         const updateShop = await client.coffeeShop.update({
           where: {
             id,
@@ -37,74 +55,19 @@ export default {
             latitude,
             longitude,
             photos: {
-              updateMany: urlMap,
+              updateMany: newPhotos,
+            },
+            categories: {
+              delete: disconnectedCategories,
             },
           },
         });
-        const prevCategory = await client.category.findMany({
-          where: {
-            shops: {
-              some: { shopId: id },
-            },
-          },
-        });
-        prevCategory.map(async (category) =>
-          client.coffeeShopToCategory.delete({
-            where: {
-              shopId_categoryId: { shopId: id, categoryId: category.id },
-            },
-          })
-        );
 
         if (categories) {
-          categories.map(async (category: string) => {
-            const existCategory = await client.category.findFirst({
-              where: { name: category },
-            });
-            if (existCategory) {
-              await client.category.update({
-                where: {
-                  id: existCategory.id,
-                },
-                data: {
-                  shops: {
-                    connectOrCreate: {
-                      where: {
-                        shopId_categoryId: {
-                          shopId: updateShop.id,
-                          categoryId: existCategory.id,
-                        },
-                      },
-                      create: {
-                        shopId: updateShop.id,
-                      },
-                    },
-                  },
-                },
-              });
-            } else {
-              const newCategoryId = uuidv4();
-              await client.category.create({
-                data: {
-                  id: newCategoryId,
-                  name: category,
-                  slug: category,
-                  shops: {
-                    connectOrCreate: {
-                      where: {
-                        shopId_categoryId: {
-                          shopId: updateShop.id,
-                          categoryId: newCategoryId,
-                        },
-                      },
-                      create: {
-                        shopId: updateShop.id,
-                      },
-                    },
-                  },
-                },
-              });
-            }
+          categories.map(async (keyword: string) => {
+            const newCategoryId = uuidv4();
+            const updateShopId = updateShop.id;
+            await calculateCategory(keyword, updateShopId, newCategoryId);
           });
         }
 

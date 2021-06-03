@@ -4,6 +4,7 @@ import { CoffeeApi, PhotoG, Resolver } from "types";
 import { protectedResolver } from "../../user/user.utils";
 import { localSave } from "../../api.utils";
 import { v4 as uuidv4 } from "uuid";
+import { calculateCategory } from "../coffee.utils";
 
 export default {
   Mutation: {
@@ -20,10 +21,11 @@ export default {
         { loggedUser }: Resolver.Context
       ): Promise<CoffeeApi.CreateCoffeeShop.Return> => {
         try {
-          const photoUrls: string[] = [];
+          const photoUrls: { url: string }[] = [];
           if (photos) {
             photos.map(async (photo: PhotoG, idx: number) => {
-              photoUrls[idx] = await localSave("shop", loggedUser?.id, photo);
+              const url = await localSave("shop", loggedUser?.id, photo);
+              photoUrls[idx] = { url };
             });
           }
           const newCoffeeShop = await client.coffeeShop.create({
@@ -36,67 +38,21 @@ export default {
                   id: loggedUser?.id,
                 },
               },
+              photos: {
+                createMany: {
+                  data: photoUrls,
+                },
+              },
             },
           });
+
           if (categories) {
-            categories.map(async (category: string) => {
-              const existCategory = await client.category.findFirst({
-                where: { name: category },
-              });
-              if (existCategory) {
-                await client.category.update({
-                  where: {
-                    id: existCategory.id,
-                  },
-                  data: {
-                    shops: {
-                      connectOrCreate: {
-                        where: {
-                          shopId_categoryId: {
-                            shopId: newCoffeeShop.id,
-                            categoryId: existCategory.id,
-                          },
-                        },
-                        create: {
-                          shopId: newCoffeeShop.id,
-                        },
-                      },
-                    },
-                  },
-                });
-              } else {
-                const newCategoryId = uuidv4();
-                await client.category.create({
-                  data: {
-                    id: newCategoryId,
-                    name: category,
-                    slug: category,
-                    shops: {
-                      connectOrCreate: {
-                        where: {
-                          shopId_categoryId: {
-                            shopId: newCoffeeShop.id,
-                            categoryId: newCategoryId,
-                          },
-                        },
-                        create: {
-                          shopId: newCoffeeShop.id,
-                        },
-                      },
-                    },
-                  },
-                });
-              }
+            categories.map(async (keyword: string) => {
+              const newCategoryId = uuidv4();
+              const newShopId = newCoffeeShop.id;
+              await calculateCategory(keyword, newShopId, newCategoryId);
             });
           }
-          const urlMap = photoUrls.map((url: string) => ({
-            url,
-            shopId: newCoffeeShop.id,
-          }));
-
-          await client.coffeeShopPhoto.createMany({
-            data: [...urlMap],
-          });
 
           return { result: true };
         } catch (error) {

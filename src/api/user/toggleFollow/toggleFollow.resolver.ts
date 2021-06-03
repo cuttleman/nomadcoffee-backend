@@ -1,7 +1,6 @@
 import client from "../../../client";
 import { Resolver, UserApi } from "types";
 import { protectedResolver } from "../user.utils";
-import { User } from ".prisma/client";
 
 export default {
   Mutation: {
@@ -12,7 +11,7 @@ export default {
         { loggedUser }: Resolver.Context
       ): Promise<UserApi.ToggleFollow.Return> => {
         try {
-          const isExist: User | null = await client.user.findUnique({
+          const isExist = await client.user.findUnique({
             where: { id: targetId },
           });
 
@@ -22,7 +21,7 @@ export default {
             throw Error("Followed self");
           }
 
-          const isFollowing: number = await client.user.count({
+          const isFollowing = await client.user.count({
             where: {
               id: loggedUser?.id,
               following: { some: { id: targetId } },

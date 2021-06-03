@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import client from "../../client";
 import { UserApi, Resolver } from "types";
-import { User } from ".prisma/client";
 
 export const passedHashFn = (password: UserApi.Password): Promise<string> =>
   bcrypt.hash(password, 10);
@@ -27,7 +26,7 @@ export const getUser = async (token: UserApi.Token) => {
 
     const result: any = jwt.verify(token, process.env.SECRET_KEY);
     if ("id" in result) {
-      const user: User | null = await client.user.findUnique({
+      const user = await client.user.findUnique({
         where: { id: result["id"] },
       });
       if (user) {

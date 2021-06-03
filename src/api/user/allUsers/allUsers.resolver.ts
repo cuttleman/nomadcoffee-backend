@@ -1,8 +1,8 @@
-import { User } from ".prisma/client";
+import { UserApi } from "types";
 import client from "../../../client";
 
 export default {
   Query: {
-    allUsers: (): Promise<User[]> => client.user.findMany(),
+    allUsers: (): Promise<UserApi.User[]> => client.user.findMany(),
   },
 };

@@ -1,6 +1,5 @@
 declare module "types" {
   import { ResolverFn } from "apollo-server";
-  import { Category, CoffeeShop, User } from ".prisma/client";
   import { ReadStream } from "fs-capacitor";
   import "./environment";
 
@@ -16,9 +15,22 @@ declare module "types" {
   };
 
   namespace CoffeeApi {
-    namespace CategoryComputed {
-      interface Parent extends Category {}
-    }
+    type CoffeeShop = {
+      id: string;
+      name: string;
+      latitude: string | null;
+      longitude: string | null;
+      userId: string;
+      createAt: Date;
+      updateAt: Date;
+    };
+    type Category = {
+      id: string;
+      name: string;
+      slug: string;
+      createAt: Date;
+      updateAt: Date;
+    };
     namespace SeeCategory {
       interface Args {
         keyword: string;
@@ -69,6 +81,18 @@ declare module "types" {
     type Password = string;
     type Token = string | string[] | undefined;
     type Id = string;
+    type User = {
+      id: string;
+      username: string;
+      email: string;
+      name: string | null;
+      password: string;
+      location: string | null;
+      avatarUrl: string | null;
+      githubUsername: string | null;
+      createAt: Date;
+      updateAt: Date;
+    };
 
     // Resolvers of User Api
     namespace SearchUsers {
