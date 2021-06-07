@@ -34,4 +34,4 @@ const server = new ApolloServer({
 });
 server.applyMiddleware({ app });
 
-server.start();
+// server.start();

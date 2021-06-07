@@ -17,7 +17,7 @@ export const generateToken = (id: UserApi.Id) => {
 export const getUser = async (token: UserApi.Token) => {
   try {
     if (!token) {
-      throw Error("This action to need token");
+      throw Error("getUser action to need token");
     } else if (typeof token !== "string") {
       throw Error("Token type is wrong");
     } else if (!process.env.SECRET_KEY) {
