@@ -32,9 +32,6 @@ const server = new ApolloServer({
     return { loggedUser };
   },
 });
-server.applyMiddleware({
-  app,
-  path: "/",
-});
+server.applyMiddleware({ app });
 
 // server.start();

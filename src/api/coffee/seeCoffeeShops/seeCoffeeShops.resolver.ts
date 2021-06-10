@@ -15,7 +15,6 @@ export default {
           include: {
             photos: true,
             categories: true,
-            user: true,
           },
           skip: (pageNum - 1) * TAKE_NUM,
           take: TAKE_NUM,

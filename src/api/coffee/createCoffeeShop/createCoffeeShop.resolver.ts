@@ -23,11 +23,12 @@ export default {
         try {
           const photoUrls: { url: string }[] = [];
           if (photos) {
-            photos.map(async (photo: PhotoG, idx: number) => {
+            photos.forEach(async (photo: PhotoG, idx: number) => {
               const url = await localSave("shop", loggedUser?.id, photo);
               photoUrls[idx] = { url };
             });
           }
+
           const newCoffeeShop = await client.coffeeShop.create({
             data: {
               name,
@@ -38,6 +39,12 @@ export default {
                   id: loggedUser?.id,
                 },
               },
+            },
+          });
+
+          await client.coffeeShop.update({
+            where: { id: newCoffeeShop.id },
+            data: {
               photos: {
                 createMany: {
                   data: photoUrls,
