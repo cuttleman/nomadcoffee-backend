@@ -1,5 +1,5 @@
 import client from "../../../client";
-import { protectedResolver } from "../user.utils";
+import { protectedResolver } from "../../api.utils";
 import { UserApi } from "types";
 
 export default {

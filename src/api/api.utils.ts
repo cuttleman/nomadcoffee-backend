@@ -1,5 +1,5 @@
 import fs from "fs";
-import { PhotoG } from "types";
+import { PhotoG, Resolver } from "types";
 
 export const localSave = async (
   type: "avatar" | "shop",
@@ -23,3 +23,13 @@ export const localSave = async (
   }static/${newFilename}`;
   return urlPath;
 };
+
+export const protectedResolver =
+  (resolver: any) =>
+  (root: any, args: any, context: Resolver.Context, info: any) => {
+    // (root, args, context, info)는 서버에서 넣어주는 인자들임 ex> protectedResolver(resolverFn)(root,args,context,info);
+    if (!context.loggedUser) {
+      throw Error("This action is required logIn");
+    }
+    return resolver(root, args, context, info);
+  };

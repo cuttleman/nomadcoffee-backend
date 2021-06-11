@@ -1,6 +1,6 @@
 import client from "../../../client";
+import { protectedResolver } from "../../api.utils";
 import { Resolver, UserApi } from "types";
-import { protectedResolver } from "../user.utils";
 
 export default {
   Mutation: {

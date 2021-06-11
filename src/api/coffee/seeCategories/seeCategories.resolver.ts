@@ -1,6 +1,6 @@
-import { CoffeeApi, Resolver } from "types";
 import client from "../../../client";
-import { protectedResolver } from "../../user/user.utils";
+import { protectedResolver } from "../../api.utils";
+import { CoffeeApi } from "types";
 
 export default {
   Query: {

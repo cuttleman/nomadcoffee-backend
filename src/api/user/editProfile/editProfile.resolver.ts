@@ -1,8 +1,8 @@
 import fs from "fs";
 import client from "../../../client";
-import { passedHashFn, protectedResolver } from "../user.utils";
+import { passedHashFn } from "../user.utils";
+import { localSave, protectedResolver } from "../../api.utils";
 import { Resolver, UserApi } from "types";
-import { localSave } from "../../api.utils";
 
 export default {
   Mutation: {

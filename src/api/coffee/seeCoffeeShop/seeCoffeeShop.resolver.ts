@@ -1,5 +1,4 @@
-import e from "express";
-import { CoffeeApi, Resolver } from "types";
+import { CoffeeApi } from "types";
 import client from "../../../client";
 
 export default {

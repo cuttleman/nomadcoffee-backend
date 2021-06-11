@@ -1,10 +1,9 @@
-import fs from "fs";
 import client from "../../../client";
-import { CoffeeApi, PhotoG, Resolver } from "types";
-import { protectedResolver } from "../../user/user.utils";
-import { localSave } from "../../api.utils";
 import { v4 as uuidv4 } from "uuid";
+import { protectedResolver } from "../../api.utils";
+import { localSave } from "../../api.utils";
 import { calculateCategory } from "../coffee.utils";
+import { CoffeeApi, PhotoG, Resolver } from "types";
 
 export default {
   Mutation: {
