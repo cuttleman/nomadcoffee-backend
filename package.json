@@ -9,7 +9,7 @@
   "scripts": {
     "start:dev": "nodemon --exec ts-node src/server.ts --ext js,ts",
     "generate": "npx prisma migrate dev --schema=./src/prisma/schema.prisma && npx prisma generate --schema=./src/prisma/schema.prisma",
-    "build_generate": "prisma generate --schema=./build/prisma/schema.prisma",
+    "build_generate": "prisma migrate resolve deploy --schema=./build/prisma/schema.prisma && prisma generate --schema=./build/prisma/schema.prisma",
     "copy_all": "yarn copy src/prisma/**/*.{prisma,sql} build/prisma & cp -r src/uploads build ",
     "studio": "npx prisma studio --schema=./src/prisma/schema.prisma",
     "is_migration": "prisma migrate resolve --applied <migrated name> --schema=./build/prisma/schema.prisma",
