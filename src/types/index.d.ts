@@ -75,6 +75,12 @@ declare module "types" {
       }
       interface Return extends ReturnG {}
     }
+    namespace DeleteCoffeeShop {
+      interface Args {
+        id: string;
+      }
+      interface Return extends ReturnG {}
+    }
   }
 
   namespace UserApi {
