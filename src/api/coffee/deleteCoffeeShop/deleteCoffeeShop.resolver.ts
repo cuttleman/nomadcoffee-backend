@@ -11,7 +11,7 @@ export default {
         { loggedUser }: Resolver.Context
       ): Promise<CoffeeApi.DeleteCoffeeShop.Return> => {
         try {
-          await client.$queryRaw` DELETE FROM "CoffeeShop" WHERE "id"=${id} AND "userId"=${loggedUser.id};`;
+          await client.$queryRaw` DELETE FROM "CoffeeShop" WHERE "id"=${id} AND "userId"=${loggedUser?.id};`;
           return { result: true };
         } catch (error) {
           return { result: false, error: error.message };

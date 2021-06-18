@@ -2,7 +2,7 @@ import { gql } from "apollo-server";
 
 export default gql`
   type Query {
-    seeProfile(id: String!): SeeProfile!
+    seeProfile(id: String): SeeProfile!
   }
   type SeeProfile {
     result: Boolean!

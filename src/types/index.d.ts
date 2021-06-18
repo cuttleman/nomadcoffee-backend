@@ -171,7 +171,7 @@ declare module "types" {
   namespace Resolver {
     type ProtectedResolver = ResolverFn;
     interface Context {
-      loggedUser: User | null;
+      loggedUser: UserApi.User | null;
     }
   }
 }

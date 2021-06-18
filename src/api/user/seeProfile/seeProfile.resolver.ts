@@ -1,15 +1,24 @@
 import client from "../../../client";
 import { protectedResolver } from "../../api.utils";
-import { UserApi } from "types";
+import { Resolver, UserApi } from "types";
 
 export default {
   Query: {
     seeProfile: protectedResolver(
-      async (_: any, { id }: UserApi.SeeProfile.Args) => {
+      async (
+        _: any,
+        { id }: UserApi.SeeProfile.Args,
+        { loggedUser }: Resolver.Context
+      ) => {
+        let user: any = null;
         try {
-          const user = await client.user.findUnique({
-            where: { id },
-          });
+          if (id) {
+            user = await client.user.findUnique({
+              where: { id },
+            });
+          } else {
+            user = loggedUser;
+          }
           if (user) {
             const TAKE_NUM: number = 5;
 
