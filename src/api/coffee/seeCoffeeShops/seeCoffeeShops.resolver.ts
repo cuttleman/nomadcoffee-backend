@@ -3,17 +3,17 @@ import client from "../../../client";
 
 export default {
   Query: {
-    seeCoffeeShops: async (
-      _: any,
-      { pageNum }: any,
-      { loggedUser }: Resolver.Context
-    ) => {
-      const TAKE_NUM = 12;
+    seeCoffeeShops: async (_: any, { pageNum }: any) => {
+      const TAKE_NUM = 3;
+
       try {
+        const totalShops = await client.coffeeShop.count();
+        const totalPage = Math.ceil(totalShops / TAKE_NUM);
+
         const findShops = await client.coffeeShop.findMany({
-          where: { userId: loggedUser?.id },
           include: {
             photos: true,
+            user: true,
           },
           skip: (pageNum - 1) * TAKE_NUM,
           take: TAKE_NUM,
@@ -25,7 +25,7 @@ export default {
           });
           return { ...shop, ...(categories && { categories }) };
         });
-        return { result: true, shops };
+        return { result: true, shops, totalPage };
       } catch (error) {
         return { result: false, error: error.message };
       }
