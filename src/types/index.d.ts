@@ -41,6 +41,14 @@ declare module "types" {
         shops?: CoffeeShop[];
       }
     }
+    namespace SearchCoffeeShop {
+      interface Args {
+        keyword: string;
+      }
+      interface Return extends ReturnG {
+        shops?: CoffeeShop[];
+      }
+    }
     namespace SeeCoffeeShop {
       interface Args {
         id: string;
