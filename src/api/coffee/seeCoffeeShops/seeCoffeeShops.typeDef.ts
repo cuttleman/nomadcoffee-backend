@@ -4,7 +4,8 @@ export default gql`
   type SeeCoffeeShops {
     result: Boolean!
     error: String
-    totalPage: Int
+    hasNext: Boolean
+    pageNum: Int
     shops: [CoffeeShop]
   }
   type Query {

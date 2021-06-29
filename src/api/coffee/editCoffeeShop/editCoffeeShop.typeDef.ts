@@ -11,8 +11,8 @@ export default gql`
       name: String
       latitude: String
       longitude: String
-      photos: [Upload!]
-      categories: [String!]
+      photos: [Upload]
+      categories: [String]
     ): EditCoffeeShop!
   }
 `;

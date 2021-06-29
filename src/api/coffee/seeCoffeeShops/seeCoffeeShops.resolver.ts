@@ -9,6 +9,7 @@ export default {
       try {
         const totalShops = await client.coffeeShop.count();
         const totalPage = Math.ceil(totalShops / TAKE_NUM);
+        const hasNext = pageNum < totalPage;
 
         const findShops = await client.coffeeShop.findMany({
           include: {
@@ -25,7 +26,7 @@ export default {
           });
           return { ...shop, ...(categories && { categories }) };
         });
-        return { result: true, shops, totalPage };
+        return { result: true, shops, hasNext, pageNum };
       } catch (error) {
         return { result: false, error: error.message };
       }

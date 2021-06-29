@@ -53,7 +53,7 @@ export default {
           });
 
           if (categories) {
-            categories.map(async (keyword: string) => {
+            categories.forEach(async (keyword: string) => {
               const newCategoryId = uuidv4();
               const newShopId = newCoffeeShop.id;
               await calculateCategory(keyword, newShopId, newCategoryId);
