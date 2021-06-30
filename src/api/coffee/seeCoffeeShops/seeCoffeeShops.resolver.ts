@@ -1,4 +1,3 @@
-import { Resolver } from "types";
 import client from "../../../client";
 
 export default {
@@ -26,7 +25,7 @@ export default {
           });
           return { ...shop, ...(categories && { categories }) };
         });
-        return { result: true, shops, hasNext, pageNum };
+        return { result: true, shops, hasNext };
       } catch (error) {
         return { result: false, error: error.message };
       }

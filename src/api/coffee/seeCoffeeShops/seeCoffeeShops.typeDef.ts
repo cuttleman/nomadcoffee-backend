@@ -5,7 +5,6 @@ export default gql`
     result: Boolean!
     error: String
     hasNext: Boolean
-    pageNum: Int
     shops: [CoffeeShop]
   }
   type Query {
