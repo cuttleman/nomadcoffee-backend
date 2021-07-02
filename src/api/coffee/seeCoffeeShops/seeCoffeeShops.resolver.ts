@@ -1,8 +1,12 @@
+import { CoffeeApi } from "types";
 import client from "../../../client";
 
 export default {
   Query: {
-    seeCoffeeShops: async (_: any, { pageNum }: any) => {
+    seeCoffeeShops: async (
+      _: any,
+      { pageNum }: CoffeeApi.SeeCoffeeShops.Args
+    ): Promise<CoffeeApi.SeeCoffeeShops.Return> => {
       const TAKE_NUM = 3;
 
       try {
@@ -19,12 +23,14 @@ export default {
           take: TAKE_NUM,
         });
 
-        const shops = findShops.map(async (shop) => {
-          const categories = await client.category.findMany({
-            where: { shops: { some: { shopId: shop.id } } },
-          });
-          return { ...shop, ...(categories && { categories }) };
-        });
+        const shops = findShops.map(
+          async (shop: any): Promise<CoffeeApi.CoffeeShop> => {
+            const categories = await client.category.findMany({
+              where: { shops: { some: { shopId: shop.id } } },
+            });
+            return { ...shop, ...(categories && { categories }) };
+          }
+        );
         return { result: true, shops, hasNext };
       } catch (error) {
         return { result: false, error: error.message };

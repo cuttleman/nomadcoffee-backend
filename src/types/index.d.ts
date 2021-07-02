@@ -15,12 +15,19 @@ declare module "types" {
   };
 
   namespace CoffeeApi {
+    type CoffeeShopPhoto = {
+      id: String;
+      url?: String;
+    };
     type CoffeeShop = {
       id: string;
       name: string;
       latitude: string | null;
       longitude: string | null;
       userId: string;
+      user?: UserApi.User;
+      photos?: CoffeeShopPhoto[];
+      categories?: Category[];
       createAt: Date;
       updateAt: Date;
     };
@@ -55,6 +62,15 @@ declare module "types" {
       }
       interface Return extends ReturnG {
         shop?: CoffeeShop;
+      }
+    }
+    namespace SeeCoffeeShops {
+      interface Args {
+        pageNum: number;
+      }
+      interface Return extends ReturnG {
+        hasNext?: boolean;
+        shops?: Promise<CoffeeApi.CoffeeShop>[];
       }
     }
     namespace SeeCategories {
